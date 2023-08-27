@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "https://registro.unapec.edu.do/StudentRegistrationSsb/ssb/registrationHistory/registrationHistory",
+            "webRoot": "${workspaceFolder}/extension",
+            "runtimeArgs": [
+                "--load-extension=${workspaceFolder}/extension"
+            ]
+        }
+    ]
+}
