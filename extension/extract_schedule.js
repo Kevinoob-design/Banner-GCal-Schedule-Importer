@@ -16,7 +16,8 @@ function extract_schedule() {
 	} else {
 		for (var i = 0; i < child_divs.length; ++i) {
 			var meeting_days = [ ...child_divs[ i ].getElementsByClassName("listViewMeetingInformation")[ 0 ].getElementsByClassName("ui-pillbox-summary") ].map(meeting_day => meeting_day.innerText);
-			var course_title = course_names[ i + 1 ].getElementsByTagName("td")[ 1 ].innerText.substring(0, course_names[ i + 1 ].getElementsByTagName("td")[ 1 ].innerText.indexOf(","));
+			var course_title = course_names[ i + 1 ].getElementsByTagName("td")[ 1 ].innerText.replace(/,/gi, ", Section:");
+			var course_name = course_names[ i + 1 ].getElementsByTagName("td")[ 0 ].innerText
 			var instructor_name = child_divs[ i ].getElementsByClassName("listViewInstructorInformation")[ 0 ].innerText.split("\n")[ 0 ].split(":")[ 1 ];
 			course_crn = child_divs[ i ].getElementsByClassName("listViewInstructorInformation")[ 0 ].innerText.split("\n")[ 1 ].split(":")[ 1 ];
 			if (meeting_days[ 0 ] === "None") {
@@ -47,8 +48,8 @@ function extract_schedule() {
 
 					schedule.push({
 						"id": id,
-						"course_title": course_title,
-						"instructor_name": instructor_name,
+						"course_title": `${course_name}: ${course_title}`,
+						"instructor_name": instructor_name.trim(),
 						"course_crn": course_crn,
 						"meeting_window": meeting_window,
 						"meeting_days": meeting_days,
@@ -56,9 +57,9 @@ function extract_schedule() {
 						"meeting_building": meeting_details[ 2 ],
 						"meeting_room": meeting_details[ 3 ],
 						"meeting_location": meeting_details[ 1 ].split(":")[ 1 ].trim(),
-						"meeting_details": meeting_details.join().replace(/,/gi, ", "),
+						"meeting_details": `${selected_semester.trim()} - ${course_name}: ${course_title}, ${meeting_details.join().replace(/,/gi, ", ")}`,
 						"course_type": "In-Person",
-						"selected_semester": selected_semester,
+						"selected_semester": selected_semester.trim(),
 						"meeting_day": meeting_day,
 						"group": i
 					});
