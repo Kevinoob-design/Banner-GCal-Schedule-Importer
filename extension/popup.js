@@ -286,16 +286,16 @@ function exportScheduleToIcs(courseEventInfo, viewedSemester, semEndDate) {
 		var course = courseEventInfo[ i ];
 		if (course.meeting_times === "Online" || course.meeting_times === undefined)
 			continue;
-		var classStartDate = new Date(new Date(course.meeting_window[ 0 ]));
-		var classEndDate = new Date(new Date(course.meeting_window[ 0 ]));
+		var classStartDate = new Date(course.meeting_window[ 0 ]);
+		var classEndDate = new Date(course.meeting_window[ 0 ]);
 
 		adjust_datetime(course, classStartDate, classEndDate);
 
 		const summary = course.course_title;
 		const description = course.meeting_details;
-		const location = "Universidad APEC, Av. Máximo Gómez 72, Santo Domingo 10100, Dominican Republic";
-		const begin = classStartDate.toJSON();
-		const end = classEndDate.toJSON();
+		const location = "Universidad APEC, Av. Maximo Gomez 72, Santo Domingo 10100, Dominican Republic";
+		const begin = classStartDate;
+		const end = classEndDate;
 		cal.addEvent(summary, description, location, begin, end, rrule)
 	}
 
@@ -328,6 +328,12 @@ function adjust_datetime(course, classStartDate, classEndDate) {
 			break;
 		case "Friday":
 			classStartDay = 5;
+			break;
+		case "Saturday":
+			classStartDay = 6;
+			break;
+		case "Sunday":
+			classStartDay = 7;
 			break;
 	}
 

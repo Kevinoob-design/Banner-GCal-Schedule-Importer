@@ -43,7 +43,10 @@ function extract_schedule() {
 
 					const meeting_details = [ ...child_divs[ i ].getElementsByClassName("listViewMeetingInformation")[ 0 ].getElementsByClassName("bold") ]
 						.map(uiPillBox => `${uiPillBox.innerText} ${uiPillBox.nextSibling.nodeValue.trim()}`).splice(k * 4, (k * 4) + 4)
-					const meeting_room = child_divs[ i ].getElementsByClassName("listViewMeetingInformation")[ 0 ].innerHTML.split("<br>")[ k ].substr(-4).replace(/\D/g, "");
+
+					const details = `${selected_semester.trim()} - ${course_name}: ${course_title}, 
+					instructor: ${instructor_name.trim()}, 
+					${meeting_details.join().replace(/,/gi, ", ")}`
 					const id = uuidv4();
 
 					schedule.push({
@@ -57,7 +60,7 @@ function extract_schedule() {
 						"meeting_building": meeting_details[ 2 ],
 						"meeting_room": meeting_details[ 3 ],
 						"meeting_location": meeting_details[ 1 ].split(":")[ 1 ].trim(),
-						"meeting_details": `${selected_semester.trim()} - ${course_name}: ${course_title}, ${meeting_details.join().replace(/,/gi, ", ")}`,
+						"meeting_details": details,
 						"course_type": "In-Person",
 						"selected_semester": selected_semester.trim(),
 						"meeting_day": meeting_day,
