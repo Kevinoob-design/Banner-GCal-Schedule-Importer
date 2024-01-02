@@ -20,35 +20,39 @@ function extract_schedule() {
 			var course_name = course_names[ i + 1 ].getElementsByTagName("td")[ 0 ].innerText
 			var instructor_name = child_divs[ i ].getElementsByClassName("listViewInstructorInformation")[ 0 ].innerText.split("\n")[ 0 ].split(":")[ 1 ];
 			course_crn = child_divs[ i ].getElementsByClassName("listViewInstructorInformation")[ 0 ].innerText.split("\n")[ 1 ].split(":")[ 1 ];
-			if (meeting_days[ 0 ] === "None") {
-				schedule.push({
-					"id": uuidv4(),
-					"course_title": course_title,
-					"instructor_name": instructor_name,
-					"course_crn": course_crn,
-					"meeting_window": child_divs[ i ].getElementsByClassName("listViewMeetingInformation")[ 0 ].getElementsByTagName("span")[ 0 ].innerText.replace(/\s/g, '').split("--"),
-					"selected_semester": selected_semester,
-					"meeting_times": "Online"
-				});
-			} else {
-				var meeting_window = child_divs[ i ].getElementsByClassName("listViewMeetingInformation")[ 0 ].getElementsByTagName("span")[ 0 ].innerText.replace(/\s/g, '').split("--");
-				var meeting_times = [ ...child_divs[ i ].getElementsByClassName("listViewMeetingInformation")[ 0 ].getElementsByClassName("ui-pillbox") ]
-					.map(uiPillBox => uiPillBox.nextSibling.innerText.replace(/\s/g, '').split("-"))
 
-				var semFirstDay = new Date(meeting_window[ 0 ]);
-				semFirstDay = semFirstDay.getDay();
+			var meeting_window = child_divs[ i ].getElementsByClassName("listViewMeetingInformation")[ 0 ].getElementsByTagName("span")[ 0 ].innerText.replace(/\s/g, '').split("--");
+			var meeting_times = [ ...child_divs[ i ].getElementsByClassName("listViewMeetingInformation")[ 0 ].getElementsByClassName("ui-pillbox") ]
+				.map(uiPillBox => uiPillBox.nextSibling.innerText.replace(/\s/g, '').split("-"))
 
-				for (let k = 0; k < meeting_days.length; k++) {
-					const meeting_day = meeting_days[ k ];
+			var semFirstDay = new Date(meeting_window[ 0 ]);
+			semFirstDay = semFirstDay.getDay();
 
-					const meeting_details = [ ...child_divs[ i ].getElementsByClassName("listViewMeetingInformation")[ 0 ].getElementsByClassName("bold") ]
-						.map(uiPillBox => `${uiPillBox.innerText} ${uiPillBox.nextSibling.nodeValue.trim()}`).splice(k * 4, (k * 4) + 4)
+			for (let k = 0; k < meeting_days.length; k++) {
+				const meeting_day = meeting_days[ k ];
 
-					const details = `${selected_semester.trim()} - ${course_name}: ${course_title}, 
-					instructor: ${instructor_name.trim()}, 
-					${meeting_details.join().replace(/,/gi, ", ")}`
-					const id = uuidv4();
+				const meeting_details = [ ...child_divs[ i ].getElementsByClassName("listViewMeetingInformation")[ 0 ].getElementsByClassName("bold") ]
+					.map(uiPillBox => `${uiPillBox.innerText} ${uiPillBox.nextSibling.nodeValue.trim()}`).splice(k * 4, (k * 4) + 4)
 
+				const details = `${selected_semester.trim()} - ${course_name}: ${course_title}, 
+				instructor: ${instructor_name?.trim()}, 
+				${meeting_details.join().replace(/,/gi, ", ")}`
+				const id = uuidv4();
+
+				if (meeting_day === "None") {
+					schedule.push({
+						"id": uuidv4(),
+						"course_title": `${course_name}: ${course_title}`,
+						"instructor_name": instructor_name?.trim(),
+						"course_crn": course_crn,
+						"meeting_window": meeting_window,
+						"selected_semester": selected_semester,
+						"meeting_times": "Online",
+						"meeting_details": details,
+						"group": i,
+					});
+				}
+				else {
 					schedule.push({
 						"id": id,
 						"course_title": `${course_name}: ${course_title}`,
@@ -67,8 +71,8 @@ function extract_schedule() {
 						"group": i
 					});
 				}
-
 			}
+
 			if (i == child_divs.length - 1) {
 				chrome.runtime.sendMessage({
 					data: schedule
